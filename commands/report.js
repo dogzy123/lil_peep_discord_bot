@@ -1,16 +1,23 @@
 const { MessageEmbed, MessageAttachment } = require('discord.js');
+const Command = require('../classes/command');
 
-module.exports = (client, command) => {
-    const redirectChannelId = '547544838074138674';
+const Report = new Command('report', {
+    description: 'Allows you to report user (!report @name text/img)',
+    redirectChannelId: '547544838074138674',
+});
 
-    client.on('message', (msg) => {
-        if (msg.content.startsWith(`!${command}`)) {
+Report.exec = function () {
+    const { redirectChannelId } = this.props;
+
+    this.client.on('message', (msg) => {
+        if (msg.content.startsWith(`!${this.name}`)) {
             const [cmd, user, txt] = msg.content.split(' ');
-           // console.log(msg);
-            const author = msg.author.username;
-            const target = msg.mentions.users.first().username;
 
-            const redirectChannel = client.channels.cache.find( ch => ch.id === redirectChannelId );
+            const author = msg.author.username;
+            const mention = msg.mentions.users.first().username;
+            const target = mention ? mention.username : null;
+
+            const redirectChannel = this.client.channels.cache.find( ch => ch.id === redirectChannelId );
 
             if (redirectChannel) {
                 const reportMsg = new MessageEmbed();
@@ -39,3 +46,5 @@ module.exports = (client, command) => {
         }
     });
 };
+
+module.exports = Report;

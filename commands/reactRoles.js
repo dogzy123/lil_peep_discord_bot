@@ -1,8 +1,10 @@
 const { MessageEmbed } = require('discord.js');
+const Command = require('../classes/command');
 
-module.exports = (client) => {
-    const rolesChannelId = '565190122795040768';
-    const emojiRoles = {
+const ReactRoles = new Command('roles', {
+    description: 'Generates reactions to select roles',
+    rolesChannelId: '565190122795040768',
+    emojiRoles: {
         '790691917381763082': 'Apex Legends',
         '790690564685037588': 'Overwatch',
         '790691806799069235': 'Paladins',
@@ -16,7 +18,11 @@ module.exports = (client) => {
         '790692851213926441': 'Sea of Thieves',
         '790692231140081704': 'Dead by Daylight',
         '790692460258131998': 'Raft',
-    };
+    },
+});
+
+ReactRoles.exec = function() {
+    const {rolesChannelId, emojiRoles} = this.props;
 
     const clearChannel = async (channel) => {
         try {
@@ -27,7 +33,25 @@ module.exports = (client) => {
         }
     };
 
-    client.on('message', (msg) => {
+    const handleReaction = (action, user, reaction) => {
+        if (reaction.message.channel.id ===  rolesChannelId && user.id !== "547832309173321739") {
+            const { guild } = reaction.message;
+            const emojiRole = emojiRoles[reaction._emoji.id];
+            console.log(emojiRole);
+            if (!emojiRole) return;
+            
+            const actualRole = guild.roles.cache.find( role => role.name === emojiRole ); 
+            console.log(actualRole);
+            const member = guild.members.cache.find( member => member.id === user.id );
+            if (action === 'add') {
+                member.roles.add(actualRole)
+            } else {
+                member.roles.remove(actualRole);
+            }
+        }
+    }
+
+    this.client.on('message', (msg) => {
         if (msg.channel.id === rolesChannelId) {
             if (msg.content === "!roles") {
                 clearChannel(msg.channel).catch(e => console.error(e));
@@ -54,30 +78,14 @@ module.exports = (client) => {
             }
         }
     });
-    
-    const handleReaction = (action, user, reaction) => {
-        if (reaction.message.channel.id ===  rolesChannelId && user.id !== "547832309173321739") {
-            const { guild } = reaction.message;
-            const emojiRole = emojiRoles[reaction._emoji.id];
-            console.log(emojiRole);
-            if (!emojiRole) return;
-            
-            const actualRole = guild.roles.cache.find( role => role.name === emojiRole ); 
-            console.log(actualRole);
-            const member = guild.members.cache.find( member => member.id === user.id );
-            if (action === 'add') {
-                member.roles.add(actualRole)
-            } else {
-                member.roles.remove(actualRole);
-            }
-        }
-    }
 
-    client.on('messageReactionAdd', (reaction, user) => {
+    this.client.on('messageReactionAdd', (reaction, user) => {
         handleReaction('add', user, reaction);
     });
 
-    client.on('messageReactionRemove', (reaction, user) => {
+    this.client.on('messageReactionRemove', (reaction, user) => {
         handleReaction('remove', user, reaction);
     });
 };
+
+module.exports = ReactRoles;

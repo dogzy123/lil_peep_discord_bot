@@ -4,24 +4,30 @@ const client = new Client();
 require('dotenv').config();
 
 // modules
-const help = require('./help');
-const reactRoles = require('./reactRoles');
-const report = require('./report');
-
-// commands
-const commands = {
-    'help': "Get all commands",
-    'roles': "Generate roles",
-    'report': "Report user (!report @user text/img)"
-};
+const Help = require('./commands/help');
+const ReactRoles = require('./commands/reactRoles');
+const Report = require('./commands/report');
 
 // main
+const generateCommands = (commands) => {
+    commands.forEach( (command) => {
+        try {
+            command.register(client, commands);
+            command.exec();
+        } catch (e) {
+            console.error(`Failed to register command: ${command.name}: ${e}`);
+        }
+    } );
+};
+
 client.on('ready', () => {
     console.log(`Bot ${client.user.tag} is now online!`);
-    help(client, commands);
 
-    reactRoles(client, commands.roles);
-    report(client, 'report');
+    generateCommands([
+        Help,
+        Report,
+        ReactRoles
+    ]);
 });
 
 // login bot

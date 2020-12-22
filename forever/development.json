@@ -1,0 +1,9 @@
+{
+    "uid": "lil_peep_discord_bot",
+    "append": true,
+    "watch": false,
+    "script": "main.js",
+    "sourceDir": "./",
+    "errFile": "error.log",
+    "killTree": true
+}
