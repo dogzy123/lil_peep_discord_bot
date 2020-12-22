@@ -1,6 +1,8 @@
 const { Client } = require('discord.js');
 const client = new Client();
 
+require('dotenv').config();
+
 // modules
 const help = require('./help');
 const reactRoles = require('./reactRoles');
@@ -23,4 +25,4 @@ client.on('ready', () => {
 });
 
 // login bot
-client.login('NTQ3ODMyMzA5MTczMzIxNzM5.XG2OmA.6e6Dz0gX-S-nK1VU99vPccCmWsM');
+client.login(process.env.BOT_TOKEN);
