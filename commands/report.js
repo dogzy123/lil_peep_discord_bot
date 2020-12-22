@@ -14,7 +14,7 @@ Report.exec = function () {
             const [cmd, user, txt] = msg.content.split(' ');
 
             const author = msg.author.username;
-            const mention = msg.mentions.users.first().username;
+            const mention = msg.mentions.users.first();
             const target = mention ? mention.username : null;
 
             const redirectChannel = this.client.channels.cache.find( ch => ch.id === redirectChannelId );
