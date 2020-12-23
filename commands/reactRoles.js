@@ -18,8 +18,23 @@ const ReactRoles = new Command('roles', {
         '790692851213926441': 'Sea of Thieves',
         '790692231140081704': 'Dead by Daylight',
         '790692460258131998': 'Raft',
+        '790767612798697513': 'Star Wars: Battlefront',
     },
 });
+
+ReactRoles.onStartup = function () {
+    const { rolesChannelId } = this.props;
+
+    const rolesCh = this.client.channels.cache.find( ch => ch.id === rolesChannelId );
+
+    if (rolesCh) {
+        rolesCh.send('!roles');
+
+        setTimeout( () => {
+            rolesCh.send('!femRoles').then( msg => rolesCh.messages.delete(msg) );
+        }, 1000);
+    }
+};
 
 ReactRoles.exec = function() {
     const {rolesChannelId, emojiRoles} = this.props;
@@ -37,11 +52,11 @@ ReactRoles.exec = function() {
         if (reaction.message.channel.id ===  rolesChannelId && user.id !== "547832309173321739") {
             const { guild } = reaction.message;
             const emojiRole = emojiRoles[reaction._emoji.id];
-            console.log(emojiRole);
+
             if (!emojiRole) return;
             
             const actualRole = guild.roles.cache.find( role => role.name === emojiRole ); 
-            console.log(actualRole);
+
             const member = guild.members.cache.find( member => member.id === user.id );
             if (action === 'add') {
                 member.roles.add(actualRole)

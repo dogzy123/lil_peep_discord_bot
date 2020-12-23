@@ -8,6 +8,9 @@ class Command {
         this.client = client;
         this.commands = commands;
 
+        if (this.hasOwnProperty('onStartup') && typeof this.onStartup === 'function') {
+            this.onStartup();
+        }
         // let valid = true;
 
         // commands.forEach( cmd => {
